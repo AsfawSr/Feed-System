@@ -1,3 +1,60 @@
 spring:
   application:
     name: feed-system
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/feed_system}
+    username: ${DB_USERNAME:feed_user}
+    password: ${DB_PASSWORD:feed_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2s
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+feedsystem:
+  jwt:
+    issuer: FeedSystem
+    secret: ${JWT_SECRET:change-this-development-secret-that-is-at-least-32-bytes}
+    access-token-expiration-minutes: ${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES:60}
+
+  feed:
+    default-page-size: ${FEED_DEFAULT_PAGE_SIZE:20}
+    max-page-size: ${FEED_MAX_PAGE_SIZE:100}
+    redis-feed-size: ${FEED_REDIS_FEED_SIZE:1000}
+
+  fanout:
+    batch-size: ${FANOUT_BATCH_SIZE:500}
+    worker-pool-size: ${FANOUT_WORKER_POOL_SIZE:4}
+    hot-user-follower-threshold: ${HOT_USER_FOLLOWER_THRESHOLD:10000}
+
+  rate-limit:
+    post-create:
+      capacity: ${POST_CREATE_RATE_LIMIT_CAPACITY:10}
+      refill-period-seconds: ${POST_CREATE_RATE_LIMIT_REFILL_SECONDS:60}
+    feed-read:
+      capacity: ${FEED_READ_RATE_LIMIT_CAPACITY:120}
+      refill-period-seconds: ${FEED_READ_RATE_LIMIT_REFILL_SECONDS:60}
