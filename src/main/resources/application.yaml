@@ -3,9 +3,9 @@ spring:
     name: feed-system
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/feed_system}
-    username: ${DB_USERNAME:feed_user}
-    password: ${DB_PASSWORD:feed_password}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/feed-system}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:Asfawpassword}
     driver-class-name: org.postgresql.Driver
 
   jpa:
