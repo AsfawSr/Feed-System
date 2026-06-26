@@ -26,4 +26,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
 	@Query("SELECT f.follower.id FROM Follow f WHERE f.following.id = :followingId ORDER BY f.createdAt DESC")
 	List<Long> findRecentFollowerIdsByFollowingId(Long followingId, Pageable pageable);
+
+	@Query("SELECT f.following.id FROM Follow f WHERE f.follower.id = :followerId")
+	List<Long> findFollowingIdsByFollowerId(Long followerId);
 }
