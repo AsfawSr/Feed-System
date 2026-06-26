@@ -2,6 +2,8 @@ package com.asfaw.feed_system.post;
 
 import com.asfaw.feed_system.auth.security.AuthenticatedUser;
 import com.asfaw.feed_system.common.api.PageResponse;
+import com.asfaw.feed_system.common.rate.RateLimitExceededException;
+import com.asfaw.feed_system.common.rate.RateLimitService;
 import com.asfaw.feed_system.feed.FanOutOrchestrator;
 import com.asfaw.feed_system.post.api.dto.CreatePostRequest;
 import com.asfaw.feed_system.post.api.dto.PostResponse;
@@ -25,10 +27,17 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final PostMapper postMapper;
 	private final FanOutOrchestrator fanOutOrchestrator;
+	private final RateLimitService rateLimitService;
 
 	@Transactional
 	public PostResponse createPost(CreatePostRequest request) {
 		AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		// Rate limit check
+		if (!rateLimitService.allowPostCreate(currentUser.id())) {
+			throw new RateLimitExceededException("Post creation rate limit exceeded. Please try again later.");
+		}
+
 		UserAccount author = userRepository.findById(currentUser.id())
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
 

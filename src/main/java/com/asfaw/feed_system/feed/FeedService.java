@@ -2,6 +2,8 @@ package com.asfaw.feed_system.feed;
 
 import com.asfaw.feed_system.auth.security.AuthenticatedUser;
 import com.asfaw.feed_system.common.api.PageResponse;
+import com.asfaw.feed_system.common.rate.RateLimitExceededException;
+import com.asfaw.feed_system.common.rate.RateLimitService;
 import com.asfaw.feed_system.follow.FollowRepository;
 import com.asfaw.feed_system.post.Post;
 import com.asfaw.feed_system.post.PostMapper;
@@ -31,6 +33,7 @@ public class FeedService {
 	private final PostRepository postRepository;
 	private final PostMapper postMapper;
 	private final FollowRepository followRepository;
+	private final RateLimitService rateLimitService;
 
 	@Value("${feedsystem.feed.default-page-size:20}")
 	private int defaultPageSize;
@@ -40,6 +43,11 @@ public class FeedService {
 
 	public PageResponse<PostResponse> getPersonalizedFeed(int page, int size) {
 		AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		// Rate limit check
+		if (!rateLimitService.allowFeedRead(currentUser.id())) {
+			throw new RateLimitExceededException("Feed read rate limit exceeded. Please try again later.");
+		}
 
 		// Validate and adjust page size
 		size = Math.min(Math.max(size, 1), maxPageSize);
