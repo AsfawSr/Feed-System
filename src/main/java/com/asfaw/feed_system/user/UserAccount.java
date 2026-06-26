@@ -85,4 +85,8 @@ public class UserAccount extends BaseEntity {
 	public void incrementPostCount() {
 		postCount++;
 	}
+
+	public boolean isSameUser(Long userId) {
+		return getId() != null && getId().equals(userId);
+	}
 }
