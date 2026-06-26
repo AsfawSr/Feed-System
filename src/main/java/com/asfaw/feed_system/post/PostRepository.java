@@ -10,7 +10,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 	Page<Post> findByAuthorIdOrderByCreatedAtDescIdDesc(Long authorId, Pageable pageable);
 
-	List<Post> findByAuthorIdInOrderByCreatedAtDescIdDesc(Collection<Long> authorIds, Pageable pageable);
+	Page<Post> findByAuthorIdInOrderByCreatedAtDescIdDesc(Collection<Long> authorIds, Pageable pageable);
 
 	Page<Post> findAllByOrderByCreatedAtDescIdDesc(Pageable pageable);
 }

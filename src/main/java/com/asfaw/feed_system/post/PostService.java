@@ -43,7 +43,7 @@ public class PostService {
 
 		Post post = Post.builder()
 				.author(author)
-				.content(request.content())
+				.content(request.getContent())
 				.build();
 
 		Post savedPost = postRepository.save(post);

@@ -6,16 +6,10 @@ import com.asfaw.feed_system.user.UserAccount;
 import com.asfaw.feed_system.user.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface PostMapper {
 
-	@Mapping(source = "author", target = "author", qualifiedByName = "mapAuthor")
+	@Mapping(source = "author", target = "author")
 	PostResponse toResponse(Post post);
-
-	@Named("mapAuthor")
-	default UserSummaryResponse mapAuthor(UserAccount author) {
-		return UserMapper.INSTANCE.toSummary(author);
-	}
 }
