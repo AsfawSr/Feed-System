@@ -2,6 +2,7 @@ package com.asfaw.feed_system.post;
 
 import com.asfaw.feed_system.auth.security.AuthenticatedUser;
 import com.asfaw.feed_system.common.api.PageResponse;
+import com.asfaw.feed_system.feed.FanOutOrchestrator;
 import com.asfaw.feed_system.post.api.dto.CreatePostRequest;
 import com.asfaw.feed_system.post.api.dto.PostResponse;
 import com.asfaw.feed_system.user.UserAccount;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final PostMapper postMapper;
+	private final FanOutOrchestrator fanOutOrchestrator;
 
 	@Transactional
 	public PostResponse createPost(CreatePostRequest request) {
@@ -35,7 +38,16 @@ public class PostService {
 				.build();
 
 		Post savedPost = postRepository.save(post);
+
+		// Trigger fan-out asynchronously
+		fanOutPost(savedPost);
+
 		return postMapper.toResponse(savedPost);
+	}
+
+	@Async
+	protected void fanOutPost(Post post) {
+		fanOutOrchestrator.fanOutPost(post);
 	}
 
 	@Transactional(readOnly = true)
